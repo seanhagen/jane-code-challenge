@@ -26,8 +26,8 @@ type MatchDay struct {
 
 // Match ...
 type Match struct {
-	T1, T2 string
-	S1, S2 int
+	TeamOne *MatchTeam
+	TeamTwo *MatchTeam
 }
 
 // MatchTeam ...
@@ -38,44 +38,41 @@ type MatchTeam struct {
 
 // ParseLine ...
 func ParseLine(input string) (*Match, error) {
-	m := &Match{S1: -1, S2: -1}
-
 	parts := strings.Split(input, ",")
 	if len(parts) != 2 {
-		return m, fmt.Errorf("wrong number of parts in match string '%v'", input)
+		return nil, fmt.Errorf("wrong number of parts in match string '%v'", input)
 	}
 
-	t1, s1, err := parseTeam(parts[0])
+	t1, err := parseTeam(parts[0])
 	if err != nil {
-		return m, err
+		return nil, err
 	}
 
-	t2, s2, err := parseTeam(parts[1])
+	t2, err := parseTeam(parts[1])
 	if err != nil {
-		return m, err
+		return nil, err
 	}
 
-	m.T1 = t1
-	m.T2 = t2
-	m.S1 = s1
-	m.S2 = s2
-
+	m := &Match{
+		TeamOne: t1,
+		TeamTwo: t2,
+	}
 	return m, nil
 }
 
-func parseTeam(in string) (string, int, error) {
+func parseTeam(in string) (*MatchTeam, error) {
 	in = strings.TrimSpace(in)
 	bits := strings.Split(in, " ")
 	x := len(bits)
 	if x <= 0 {
-		return "", -1, fmt.Errorf("given empty team result string to parse")
+		return nil, fmt.Errorf("given empty team result string to parse")
 	}
 
 	s := bits[x-1]
 	name := strings.Join(bits[:x-1], " ")
 	score, err := strconv.Atoi(s)
 	if err != nil {
-		return "", -1, fmt.Errorf("unable to parse score '%v': %v", s, err)
+		return nil, fmt.Errorf("unable to parse score '%v': %v", s, err)
 	}
-	return name, score, nil
+	return &MatchTeam{name, score}, nil
 }

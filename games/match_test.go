@@ -53,23 +53,31 @@ func TestGames_Match(t *testing.T) {
 			}
 
 			if tt.ok && m != nil {
-				if m.T1 != tt.t1 {
-					t.Errorf("wrong team 1; expected '%v', got '%v'", tt.t1, m.T1)
+				if m.TeamOne == nil {
+					t.Fatalf("team one in match is nil")
+					return
 				}
 
-				if m.T2 != tt.t2 {
-					t.Errorf("wrong team 2; expected '%v', got '%v'", tt.t2, m.T2)
+				if m.TeamOne.Name != tt.t1 {
+					t.Errorf("wrong team 1; expected '%v', got '%v'", tt.t1, m.TeamOne.Name)
 				}
 
-				if m.S1 != tt.s1 {
-					t.Errorf("wrong score for team 1; expected '%v', got '%v'", tt.s1, m.S1)
+				if m.TeamOne.Score != tt.s1 {
+					t.Errorf("wrong score for team 1; expected '%v', got '%v'", tt.s1, m.TeamOne.Score)
 				}
 
-				if m.S2 != tt.s2 {
-					t.Errorf("wrong score for team 2; expected '%v', got '%v'", tt.s1, m.S2)
+				if m.TeamTwo == nil {
+					t.Fatalf("team two in match is nil")
+				}
+
+				if m.TeamTwo.Name != tt.t2 {
+					t.Errorf("wrong team 2; expected '%v', got '%v'", tt.t2, m.TeamTwo.Name)
+				}
+
+				if m.TeamTwo.Score != tt.s2 {
+					t.Errorf("wrong score for team 2; expected '%v', got '%v'", tt.s1, m.TeamTwo.Score)
 				}
 			}
-
 		})
 	}
 }
