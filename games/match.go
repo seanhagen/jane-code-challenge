@@ -1,6 +1,10 @@
 package games
 
-import "fmt"
+import (
+	"fmt"
+	"strconv"
+	"strings"
+)
 
 /**
  * File: match.go
@@ -34,5 +38,44 @@ type MatchTeam struct {
 
 // ParseLine ...
 func ParseLine(input string) (*Match, error) {
-	return nil, fmt.Errorf("not yet")
+	m := &Match{S1: -1, S2: -1}
+
+	parts := strings.Split(input, ",")
+	if len(parts) != 2 {
+		return m, fmt.Errorf("wrong number of parts in match string '%v'", input)
+	}
+
+	t1, s1, err := parseTeam(parts[0])
+	if err != nil {
+		return m, err
+	}
+
+	t2, s2, err := parseTeam(parts[1])
+	if err != nil {
+		return m, err
+	}
+
+	m.T1 = t1
+	m.T2 = t2
+	m.S1 = s1
+	m.S2 = s2
+
+	return m, nil
+}
+
+func parseTeam(in string) (string, int, error) {
+	in = strings.TrimSpace(in)
+	bits := strings.Split(in, " ")
+	x := len(bits)
+	if x <= 0 {
+		return "", -1, fmt.Errorf("given empty team result string to parse")
+	}
+
+	s := bits[x-1]
+	name := strings.Join(bits[:x-1], " ")
+	score, err := strconv.Atoi(s)
+	if err != nil {
+		return "", -1, fmt.Errorf("unable to parse score '%v': %v", s, err)
+	}
+	return name, score, nil
 }
