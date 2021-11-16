@@ -71,11 +71,7 @@ func ParseLine(input string) (*Match, error) {
 		return nil, err
 	}
 
-	m := &Match{
-		TeamOne: t1,
-		TeamTwo: t2,
-	}
-	return m, nil
+	return &Match{TeamOne: t1, TeamTwo: t2}, nil
 }
 
 func parseTeam(in string) (*MatchTeam, error) {
