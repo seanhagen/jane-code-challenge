@@ -1,0 +1,27 @@
+* Requirements
+** accept text input
+file name as input argument on command line
+** output is text
+output to stdout
+** detect start of new match day
+each team only plays once per match day, so if trying to add a team to a day
+where they have already played create a new match day
+** assign points to each team
+3 for win, tie/draw is 1, loss is 0
+** output is in point order
+if two or more teams are tied in rank, output all teams of same rank in
+alphabetical order
+* To Get Done
+** DONE parse each line 
+CLOSED: [2021-11-15 Mon 15:18]
+name and score for reach team
+** TODO handle each match day [0/3]
+*** TODO create day object
+*** TODO attempt to add match to day object [0/2]
+**** TODO on failure, create new match day
+then set it as the 'current' match day and try to add it again
+**** TODO if still can't add match to day, error time
+** TODO match day output [0/2]
+*** TODO output in point/rank order
+*** TODO if N teams have same rank, output alphabetical
+where N >= 2
