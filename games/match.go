@@ -56,7 +56,7 @@ type MatchTeam struct {
 
 // ParseLine ...
 func ParseLine(input string) (*Match, error) {
-	parts := strings.Split(input, ",")
+	parts := strings.FieldsFunc(input, func(r rune) bool { return r == ',' })
 	if len(parts) != 2 {
 		return nil, fmt.Errorf("wrong number of parts in match string '%v'", input)
 	}
@@ -76,15 +76,14 @@ func ParseLine(input string) (*Match, error) {
 
 func parseTeam(in string) (*MatchTeam, error) {
 	in = strings.TrimSpace(in)
-	bits := strings.Split(in, " ")
+	bits := strings.Fields(in)
 	x := len(bits)
 	if x <= 0 {
 		return nil, &ParseTeamError{empty: true}
 	}
 
-	s := bits[x-1]
-	name := strings.Join(bits[:x-1], " ")
-	score, err := strconv.Atoi(s)
+	name := strings.Join(bits[0:x-1], " ")
+	score, err := strconv.Atoi(string(bits[x-1]))
 	if err != nil {
 		return nil, &ParseTeamError{score: string(bits[x-1]), err: err}
 	}
