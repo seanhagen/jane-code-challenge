@@ -58,7 +58,7 @@ type MatchTeam struct {
 func ParseLine(input string) (*Match, error) {
 	parts := strings.FieldsFunc(input, func(r rune) bool { return r == ',' })
 	if len(parts) != 2 {
-		return nil, fmt.Errorf("wrong number of parts in match string '%v'", input)
+		return nil, &ParseLineError{input}
 	}
 
 	t1, err := parseTeam(parts[0])
