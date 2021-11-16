@@ -36,5 +36,7 @@ func main() {
 	//  6. profit, probably
 
 	// after file is fully parsed, output each match day
+	//  - when printing a match day, only output the teams that changed points
+	//    ie: if a team loses, don't output them for that day
 
 }
