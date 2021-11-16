@@ -43,7 +43,7 @@ func TestGames_Ranking_ParseMatchLine(t *testing.T) {
 			}
 
 			if tt.ok && err == nil {
-				t1 := r.getTeam(tt.t1)
+				t1 := r.findTeam(tt.t1)
 				if t1 == nil {
 					t.Fatalf("team '%v' is not present in rankings", tt.t1)
 				}
@@ -53,7 +53,7 @@ func TestGames_Ranking_ParseMatchLine(t *testing.T) {
 					t.Errorf("Wrong score for team '%v', expected '%v' got '%v'", tt.t1, tt.s1, s1)
 				}
 
-				t2 := r.getTeam(tt.t2)
+				t2 := r.findTeam(tt.t2)
 				if t2 == nil {
 					t.Fatalf("team '%v' is not present in rankings", tt.t2)
 				}

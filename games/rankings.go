@@ -57,16 +57,6 @@ func (r Ranking) currentDay() int {
 	return r.currentMatch.Day
 }
 
-// getTeam ...
-func (r Ranking) getTeam(n string) *team {
-	for k, v := range r.Teams {
-		if k == n {
-			return v
-		}
-	}
-	return nil
-}
-
 // AddMatch ...
 func (r Ranking) AddMatch(in string) error {
 	err := r.parseMatchLine(in)
