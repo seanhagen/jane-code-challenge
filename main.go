@@ -39,4 +39,13 @@ func main() {
 	//  - when printing a match day, only output the teams that changed points
 	//    ie: if a team loses, don't output them for that day
 
+	// create ranking obj (CreateRanking)
+	// open file
+	// for each line
+	//   ask ranking to parse the line
+	//     textually parse line into names & scores
+	//     check if either team played in current match day
+	//       yes -> create new match day and set as current match day
+	//     add result to current match day
+
 }
