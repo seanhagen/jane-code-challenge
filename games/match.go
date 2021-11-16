@@ -12,16 +12,34 @@ import (
  * Creator: Sean Patrick Hagen <sean.hagen@gmail.com>
  */
 
-// MatchDay ...
-type MatchDay struct {
-	// what day is this match on?
-	Day int
-	// each team that played and their final score
-	Teams map[string]int
-	// mapping of who played who -- teams will be
-	// in here twice, both a value and a key (easier lookups)
-	Matchups map[string]string
-	Results  []Match
+// ParseTeamError ...
+type ParseTeamError struct {
+	empty bool
+	score string
+	err   error
+}
+
+// Error ...
+func (pe ParseTeamError) Error() string {
+	if pe.empty {
+		return fmt.Sprintf("given empty team result string to parse")
+	}
+	return fmt.Sprintf("unable to parse '%v' for score: %v", pe.score, pe.err)
+}
+
+// Unwrap ...
+func (pe ParseTeamError) Unwrap() error {
+	return pe.err
+}
+
+// ParseLineError ...
+type ParseLineError struct {
+	l string
+}
+
+// Error ...
+func (ple ParseLineError) Error() string {
+	return fmt.Sprintf("wrong number of parts in match string '%v'", ple.l)
 }
 
 // Match ...
@@ -65,14 +83,14 @@ func parseTeam(in string) (*MatchTeam, error) {
 	bits := strings.Split(in, " ")
 	x := len(bits)
 	if x <= 0 {
-		return nil, fmt.Errorf("given empty team result string to parse")
+		return nil, &ParseTeamError{empty: true}
 	}
 
 	s := bits[x-1]
 	name := strings.Join(bits[:x-1], " ")
 	score, err := strconv.Atoi(s)
 	if err != nil {
-		return nil, fmt.Errorf("unable to parse score '%v': %v", s, err)
+		return nil, &ParseTeamError{score: string(bits[x-1]), err: err}
 	}
 	return &MatchTeam{name, score}, nil
 }
