@@ -1,31 +1,22 @@
 package games
 
-import "fmt"
-
 /**
  * File: day.go
  * Date: 2021-11-15 15:11:26
  * Creator: Sean Patrick Hagen <sean.hagen@gmail.com>
  */
 
-var (
-	// ErrTeamPlayedToday is returned from AddMatch when one of the
-	// teams involved in the match already played in this match day
-	ErrTeamPlayedToday = fmt.Errorf("team played today already")
+type teamMatchResult string
+
+const (
+	matchWon  teamMatchResult = "won"
+	matchLost                 = "lost"
+	matchTied                 = "tied"
 )
 
-// TeamPlayedError ...
-type TeamPlayedError struct {
-	name string
-}
-
-// Error ...
-func (tpe TeamPlayedError) Error() string {
-	return fmt.Sprintf("team '%v' already played today", tpe.name)
-}
-
-// MatchDay ...
-type MatchDay struct {
+// matchDay ...
+type matchDay struct {
+	_ranking *Ranking
 	// what day is this match on?
 	Day int
 	// each team that played and their score in said match
@@ -33,25 +24,24 @@ type MatchDay struct {
 	// mapping of who played who -- teams will be
 	// in here twice, both a value and a key (easier lookups)
 	Matchups map[string]string
-	Results  []*Match
 }
 
-// NewMatchDay ...
-func NewMatchDay(d int) MatchDay {
+// newMatchDay ...
+func newMatchDay(r *Ranking, d int) matchDay {
 	if d <= 0 {
 		d = 1
 	}
 
-	return MatchDay{
+	return matchDay{
+		_ranking: r,
 		Day:      d,
 		Teams:    map[string]int{},
 		Matchups: map[string]string{},
-		Results:  []*Match{},
 	}
 }
 
 // teamPlayed ...
-func (m *MatchDay) teamPlayed(tn string) bool {
+func (m *matchDay) teamPlayed(tn string) bool {
 	for k := range m.Teams {
 		if k == tn {
 			return true
@@ -60,20 +50,21 @@ func (m *MatchDay) teamPlayed(tn string) bool {
 	return false
 }
 
-// AddMatch ...
-func (m *MatchDay) AddMatch(match *Match) error {
-	if m.teamPlayed(match.TeamOne.Name) {
-		return &TeamPlayedError{match.TeamOne.Name}
+// processMatchResults ...
+func (m *matchDay) processMatchResults(t1, t2 *teamResult) error {
+	mo := t1.team.Name
+	so := t1.score
+
+	mt := t2.team.Name
+	st := t2.score
+
+	if m.teamPlayed(t1.team.Name) {
+		return &TeamPlayedError{t1.team.Name}
 	}
 
-	if m.teamPlayed(match.TeamTwo.Name) {
-		return &TeamPlayedError{match.TeamTwo.Name}
+	if m.teamPlayed(t2.team.Name) {
+		return &TeamPlayedError{t2.team.Name}
 	}
-
-	mo := match.TeamOne.Name
-	mt := match.TeamTwo.Name
-	so := match.TeamOne.Score
-	st := match.TeamTwo.Score
 
 	m.Teams[mo] = so
 	m.Teams[mt] = st
@@ -81,16 +72,29 @@ func (m *MatchDay) AddMatch(match *Match) error {
 	m.Matchups[mo] = mt
 	m.Matchups[mt] = mo
 
-	m.Results = append(m.Results, match)
+	// add results to current match
+	var r1 teamMatchResult = matchWon
+	var r2 teamMatchResult = matchLost
+
+	if t1.score < t2.score {
+		r1 = matchLost
+		r2 = matchWon
+	} else if t1.score == t2.score {
+		r1 = matchTied
+		r2 = matchTied
+	}
+
+	if m._ranking != nil {
+		d := m._ranking.currentDay()
+		err := t1.team.recordGame(d, t2.team.Name, t1.score, r1)
+		if err != nil {
+			return nil
+		}
+		err = t2.team.recordGame(d, t1.team.Name, t2.score, r2)
+		if err != nil {
+			return nil
+		}
+	}
 
 	return nil
-}
-
-// AddMatchLine ...
-func (m *MatchDay) AddMatchLine(in string) error {
-	match, err := ParseLine(in)
-	if err != nil {
-		return err
-	}
-	return m.AddMatch(match)
 }
