@@ -1,14 +1,12 @@
 package main
 
-import (
-	"fmt"
-)
-
 /**
  * File: main.go
  * Date: 2021-11-15 14:15:29
  * Creator: Sean Patrick Hagen <sean.hagen@gmail.com>
  */
+
+import "github.com/seanhagen/jane/cmd"
 
 /**
  * Requirements:
@@ -19,33 +17,6 @@ import (
  *  - if more than 1 team are tied for points, should have same rank and print
  *    in alphabetical order
  */
-
 func main() {
-	fmt.Println("hello world!")
-
-	// attempt to open file
-	//  - error for file unopenable
-
-	// for each line in file:
-	//  1. parse line: get each team and their score
-	//  2. has either team played before this day?
-	//  2-yes: start a new match day, set as current match day
-	//  3. parse match results ( assign points )
-	//  4. calculations?
-	//  5. ???
-	//  6. profit, probably
-
-	// after file is fully parsed, output each match day
-	//  - when printing a match day, only output the teams that changed points
-	//    ie: if a team loses, don't output them for that day
-
-	// create ranking obj (CreateRanking)
-	// open file
-	// for each line
-	//   ask ranking to parse the line
-	//     textually parse line into names & scores
-	//     check if either team played in current match day
-	//       yes -> create new match day and set as current match day
-	//     add result to current match day
-
+	cmd.Execute()
 }
