@@ -25,17 +25,17 @@ There are a few ways to build the binaries for this app.
 The default output directory is `output`, which is generated as part of the
 build process.
 
-## For Your System
+### For Your System
 
 Run `mage build`, and the binary can be found at `output/ratings`. The binary
 will have been run through `upx`, so it should be pretty tiny.
 
-## Debug Binary
+### Debug Binary
 
 Run `mage buildDebug` to generate a binary with all debug strings and whatnot
 kept intact rather than being stripped from the binary.
 
-## Cross-Platform
+### Cross-Platform
 
 Using [gox](https://github.com/mitchellh/gox), we can easily compile for
 multiple platforms at once. Run `mage buildAll` and multiple binaries will be
