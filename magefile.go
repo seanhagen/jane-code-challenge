@@ -48,12 +48,13 @@ var (
 	// gox for cross compile
 	// upx to make binaries smaller
 	// golangci for checking that everything is good
-	requiredCommands  = []string{"upx", "gox", "golangci-lint"}
-	commandMinVersion = []string{"3.96", "-", "1.43.0"}
+	requiredCommands  = []string{"upx", "gox", "golangci-lint", "ghr"}
+	commandMinVersion = []string{"3.96", "-", "1.43.0", "0.14.0"}
 	commandPages      = []string{
 		"https://github.com/upx/upx/releases/latest",
 		"https://github.com/mitchellh/gox#installation",
 		"https://golangci-lint.run/usage/install/#local-installation",
+		"https://github.com/tcnksm/ghr#install",
 	}
 	commandPaths = []string{}
 
@@ -338,6 +339,23 @@ func downloadDeps() error {
 	// 		return err
 	// 	}
 	return fmt.Errorf("no deps yet")
+}
+
+// increment the major, minor, or patch of a semver, update VERSION file,
+// create commit, push, tag commit, push tag
+func bumpSemver(part string) error {
+	return fmt.Errorf("not yet")
+}
+
+func uploadRelease() error {
+	// with gh cli
+	//  - create release for current version with name
+	//  - generate changelog from commit history
+	//  - upload changelog to release
+	// with ghr cli
+	//  - upload all binaries
+
+	return fmt.Errorf("not yet")
 }
 
 /*
