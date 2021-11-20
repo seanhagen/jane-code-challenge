@@ -51,3 +51,15 @@ type ParseLineError struct {
 func (ple ParseLineError) Error() string {
 	return fmt.Sprintf("wrong number of parts in match string '%v'", ple.l)
 }
+
+// for when match_day encounters an error when calling `recordGame` on a team
+type RecordGameError struct {
+	day  int
+	team string
+	err  error
+}
+
+// Error ...
+func (rge RecordGameError) Error() string {
+	return fmt.Sprintf("error recording game for team '%v' on day %v, reason: %v", rge.team, rge.day, rge.err)
+}

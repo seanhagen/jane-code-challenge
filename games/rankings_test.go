@@ -43,8 +43,8 @@ func TestGames_Ranking_ParseMatchLine(t *testing.T) {
 			}
 
 			if tt.ok && err == nil {
-				t1 := r.findTeam(tt.t1)
-				if t1 == nil {
+				t1, ok := r.Teams[tt.t1]
+				if t1 == nil || !ok {
 					t.Fatalf("team '%v' is not present in rankings", tt.t1)
 				}
 
@@ -53,8 +53,8 @@ func TestGames_Ranking_ParseMatchLine(t *testing.T) {
 					t.Errorf("Wrong score for team '%v', expected '%v' got '%v'", tt.t1, tt.s1, s1)
 				}
 
-				t2 := r.findTeam(tt.t2)
-				if t2 == nil {
+				t2, ok := r.Teams[tt.t2]
+				if t2 == nil || !ok {
 					t.Fatalf("team '%v' is not present in rankings", tt.t2)
 				}
 
@@ -74,27 +74,111 @@ func TestGames_Ranking_ParseMatchLine(t *testing.T) {
 				}
 
 				if s1 > s2 {
-					if t1.Rank != 3 {
-						t.Errorf("expected rank for '%v' after win to be 3, rank is: %v", t1.Name, t1.Rank)
+					if t1.currentRank() != 3 {
+						t.Errorf("expected rank for '%v' after win to be 3, rank is: %v", t1.Name, t1.currentRank())
 					}
-					if t2.Rank != 0 {
-						t.Errorf("expected rank for '%v' after loss to be 0, rank is: %v", t2.Name, t2.Rank)
+					if t2.currentRank() != 0 {
+						t.Errorf("expected rank for '%v' after loss to be 0, rank is: %v", t2.Name, t2.currentRank())
 					}
 				} else if s2 > s1 {
-					if t1.Rank != 0 {
-						t.Errorf("expected rank for '%v' after loss to be 0, rank is: %v", t1.Name, t1.Rank)
+					if t1.currentRank() != 0 {
+						t.Errorf("expected rank for '%v' after loss to be 0, rank is: %v", t1.Name, t1.currentRank())
 					}
-					if t2.Rank != 3 {
-						t.Errorf("expected rank for '%v' after win to be 3, rank is: %v", t2.Name, t2.Rank)
+					if t2.currentRank() != 3 {
+						t.Errorf("expected rank for '%v' after win to be 3, rank is: %v", t2.Name, t2.currentRank())
 					}
 				} else {
-					if t1.Rank != 1 {
-						t.Errorf("expected rank for '%v' after tie to be 1, rank is: %v", t1.Name, t1.Rank)
+					if t1.currentRank() != 1 {
+						t.Errorf("expected rank for '%v' after tie to be 1, rank is: %v", t1.Name, t1.currentRank())
 					}
-					if t2.Rank != 1 {
-						t.Errorf("expected rank for '%v' after tie to be 1, rank is: %v", t2.Name, t2.Rank)
+					if t2.currentRank() != 1 {
+						t.Errorf("expected rank for '%v' after tie to be 1, rank is: %v", t2.Name, t2.currentRank())
 					}
 				}
+			}
+		})
+	}
+}
+
+func TestGames_Ranking_TestParseAndOutput(t *testing.T) {
+	inputs := []string{
+		"San Jose Earthquakes 3, Santa Cruz Slugs 3",
+		"Capitola Seahorses 1, Aptos FC 0",
+		"Felton Lumberjacks 2, Monterey United 0",
+	}
+
+	expect := `Matchday 1
+Capitola Seahorses, 3 pts
+Felton Lumberjacks, 3 pts
+San Jose Earthquakes, 1 pt
+`
+
+	r := NewRanking()
+	for _, tt := range inputs {
+		r.AddMatch(tt)
+	}
+
+	output := r.getCurrentMatchDay().Results()
+	if expect != output {
+		t.Errorf("output incorrect.\nexpected: \n%v\n\nrecieved: \n%v\n", expect, output)
+	}
+}
+
+func TestGames_Ranking_TestAddMatch(t *testing.T) {
+
+	tests := []struct {
+		inputs  []string
+		okay    []bool // needs to be same length as inputs
+		numDays int
+	}{
+		{
+			[]string{"A 1, B 1"},
+			[]bool{true},
+			1,
+		},
+		{
+			[]string{"A 1, B 1", "C 1, D 2"},
+			[]bool{true, true},
+			1,
+		},
+		{
+			[]string{"A 1 B 2 C 3"},
+			[]bool{false},
+			1,
+		},
+		{
+			[]string{"A 1, B 1", "C 1, D 2", "A 2, C 1", "B 1, D 3"},
+			[]bool{true, true, true, true},
+			2,
+		},
+	}
+
+	for i, x := range tests {
+		tt := x
+		t.Run(fmt.Sprintf("test_%v_", i), func(t *testing.T) {
+			if len(tt.inputs) != len(tt.okay) {
+				t.Fatalf("mismatched inputs & errors, should be same length; inputs: %v, errors: %v", len(tt.inputs), len(tt.okay))
+			}
+
+			r := NewRanking()
+
+			for i := 0; i < len(tt.inputs); i++ {
+				in := tt.inputs[i]
+				ok := tt.okay[i]
+				err := r.AddMatch(in)
+
+				if ok && err != nil {
+					t.Errorf("unable to add line '%v'; error: %v", in, err)
+				}
+
+				if !ok && err == nil {
+					t.Errorf("expected error for line '%v', got nothing", in)
+				}
+			}
+
+			cd := r.currentDay
+			if cd != tt.numDays {
+				t.Errorf("wrong day, expected '%v' got '%v'", tt.numDays, cd)
 			}
 		})
 	}
