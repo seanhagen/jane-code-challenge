@@ -8,8 +8,8 @@ My CLI app for the Jane coding challenge.
 All that's required is Go (at least v1.17), and [mage](https://magefile.org/).
 
 Mage is a replacement for
-[make](https://www.gnu.org/software/make/manual/make.html), which are fine, but
-magefiles let us do so much more.
+[make](https://www.gnu.org/software/make/manual/make.html), which is fine, but
+magefiles let us do so much more. Also Makefiles are a pain to read.
 
 # Testing
 
