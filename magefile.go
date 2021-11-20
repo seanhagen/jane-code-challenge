@@ -69,7 +69,7 @@ var (
  * Each exported function is callable by mage
  */
 
-// Build ...
+// Build generates a compact binary for your current system
 func Build() {
 	mg.SerialDeps(
 		checkForCommands,
@@ -77,12 +77,24 @@ func Build() {
 		makeOutputDir,
 		// probably some other steps (running tests, etc)
 		runTests,
-		buildForCurrent,
+		mg.F(buildForCurrent, false),
 		upxAllBinaries,
 	)
 }
 
-// BuildAll ...
+// BuildDebug generates a debug-ready binary for your current system
+func BuildDebug() {
+	mg.SerialDeps(
+		checkForCommands,
+		checkCommandVersions,
+		makeOutputDir,
+		// probably some other steps (running tests, etc)
+		runTests,
+		mg.F(buildForCurrent, true),
+	)
+}
+
+// BuildAll cross-compiles the application for multiple operating systems and architectures
 func BuildAll() {
 	mg.SerialDeps(
 		checkForCommands,
@@ -90,13 +102,26 @@ func BuildAll() {
 		makeOutputDir,
 		// probably some other steps (running tests, etc)
 		// runTests,
-		buildForAllPlatforms,
+		mg.F(buildForAllPlatforms, false),
 		upxAllBinaries,
 	)
 }
 
-// RunTests ...
-func RunTests() {
+// TODO: maybe write a fuzz test, or an integration test
+// // TestAll runs all tests, including long-running tests like integration tests
+// func TestAll() {
+// 	mg.SerialDeps(
+// 		checkForCommands,
+// 		checkCommandVersions,
+// 		makeOutputDir,
+// 		runTests,
+// 		// integration? fuzz?
+// 		// other test suites that take a while but should happen before a release build?
+// 	)
+// }
+
+// TestBasic runs the basic tests, no integration or other tests
+func TestBasic() {
 	mg.SerialDeps(
 		checkForCommands,
 		checkCommandVersions,
@@ -287,7 +312,7 @@ func buildForAllPlatforms() error {
 	return nil
 }
 
-func buildForCurrent() error {
+func buildForCurrent(debug bool) error {
 	// TODO: run go build, output to output directory
 	return fmt.Errorf("not yet")
 }
