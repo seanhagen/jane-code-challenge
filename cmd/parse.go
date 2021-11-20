@@ -104,10 +104,7 @@ The file format is as follows:
 			return fmt.Errorf("error processing match data: %w", err)
 		}
 
-		// fmt.Printf("Results\n=============================\n")
 		fmt.Printf("%v", ranking.Results())
-		// fmt.Printf("\n=============================\n")
-
 		return nil
 	},
 	PersistentPostRunE: func(cmd *cobra.Command, args []string) error {
