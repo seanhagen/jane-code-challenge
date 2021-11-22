@@ -1,4 +1,4 @@
-module github.com/seanhagen/jane
+module github.com/seanhagen/jane-coding-challenge
 
 go 1.17
 

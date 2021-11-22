@@ -6,8 +6,6 @@ package main
  * Creator: Sean Patrick Hagen <sean.hagen@gmail.com>
  */
 
-import "github.com/seanhagen/jane/cmd"
-
 var (
 	// Version is set by the build process, contains semantic version
 	Version string
@@ -17,6 +15,8 @@ var (
 	Repo string
 	// Branch is set by the build process, contains the branch of the repo the binary was built from
 	Branch string
+import (
+	"github.com/seanhagen/jane-coding-challenge/cmd"
 )
 
 /**

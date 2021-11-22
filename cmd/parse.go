@@ -27,7 +27,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/seanhagen/jane/games"
+	"github.com/seanhagen/jane-coding-challenge/games"
 	"github.com/spf13/cobra"
 )
 
