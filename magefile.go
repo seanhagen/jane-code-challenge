@@ -87,14 +87,14 @@ var (
 	// needed when uploading artifacts to a repo that isn't owned directly by the user
 	ghrUser = "seanhagen"
 
-	ldFlagsBase = ""
-	version     = ""
-	repo        = ""
-	build       = ""
-	branch      = ""
+	version = ""
+	repo    = ""
+	build   = ""
+	branch  = ""
 
-	rootPath = ""
-	goFiles  = []string{}
+	rootPath    = ""
+	ldFlagsBase = ""
+	goFiles     = []string{}
 )
 
 func init() {
@@ -144,6 +144,7 @@ func (Build) Current() {
 		downloadDeps,
 		checkForCommands,
 		checkCommandVersions,
+		clean,
 		makeOutputDir,
 		// probably some other steps (running tests, etc)
 		mg.F(runTests, false),
@@ -159,6 +160,7 @@ func (Build) Debug() {
 		downloadDeps,
 		checkForCommands,
 		checkCommandVersions,
+		clean,
 		makeOutputDir,
 		// probably some other steps (running tests, etc)
 		mg.F(runTests, false),
@@ -441,7 +443,6 @@ func buildForAllPlatforms() error {
 
 	out := fmt.Sprintf("%v/{{.OS}}_{{.Arch}}_%v", outputDir, binName)
 	args := []string{
-		"-ldflags", ldFlagsBase,
 		"-osarch", osa,
 		"-output", out,
 	}
@@ -461,14 +462,19 @@ func buildForCurrent(debug bool) error {
 	env := getEnv()
 	args := []string{
 		"build",
-		"-a", fmt.Sprintf(`-ldflags='%v'`, ldFlagsBase),
+		"-a",
 	}
 
 	out := binaryOut
 	switch debug {
 	case true:
 		out = fmt.Sprintf("%v_debug", binaryOut)
-		args = append(args, "-o", out, "-gcflags='all=-N -l'", "-race")
+		args = append(args,
+			"-o",
+			out,
+			"-gcflags='all=-N -l'",
+			"-race",
+		)
 	case false:
 		args = append(args, "-o", binaryOut)
 	}
@@ -497,7 +503,7 @@ func upxAllBinaries() error {
 	for _, f := range files {
 		fn := fmt.Sprintf("%v/%v", outputDir, f.Name())
 		fmt.Printf("\tUPX on '%v'...", fn)
-		err := sh.Run("upx", "-q", "-9", fn)
+		err := sh.Run("upx", "--no-progress", "-q", "-9", fn)
 		if x := printResult(err); x != nil {
 			return x
 		}
@@ -619,7 +625,7 @@ func runAndStreamOutput(cmd string, args ...string) error {
 
 // Some variables have external dependencies (like git) which may not always be available.
 func initVars() {
-	mg.Deps(setGoFiles, setVersion, setLdFlags)
+	mg.Deps(setGoFiles, setVersion)
 }
 
 func setRootPath() {
@@ -668,7 +674,7 @@ func setVersion() {
 func setLdFlags() {
 	mg.Deps(setVersion)
 	repo, branch, build = "unknown-repo", "unknown-branch", "unknown-build"
-	base := "-X main.Repo=%v -X main.Version=%v -X main.Branch=%v -X main.Build=%v"
+	base := `-ldflags=all='-X main.Repo=%v -X main.Version=%v -X main.Branch=%v -X main.Build=%v'`
 	defer func() {
 		ldFlagsBase = fmt.Sprintf(base, repo, version, branch, build)
 	}()
