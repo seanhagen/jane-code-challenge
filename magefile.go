@@ -190,7 +190,7 @@ type Release mg.Namespace
 // VersionTag uses the value of the TAG environment variable to tag the current commit
 // and push the tag. The tag must be a valid semantic version.
 func (Release) VersionTag() error {
-	mg.Deps(initVars)
+	mg.Deps(initVars, setGitInfo)
 
 	var err error
 	tag := strings.TrimSpace(os.Getenv("TAG"))
@@ -671,14 +671,7 @@ func setVersion() {
 	version = strings.TrimSpace(string(bits))
 }
 
-func setLdFlags() {
-	mg.Deps(setVersion)
-	repo, branch, build = "unknown-repo", "unknown-branch", "unknown-build"
-	base := `-ldflags=all='-X main.Repo=%v -X main.Version=%v -X main.Branch=%v -X main.Build=%v'`
-	defer func() {
-		ldFlagsBase = fmt.Sprintf(base, repo, version, branch, build)
-	}()
-
+func setGitInfo() {
 	r, err := git.PlainOpen(".")
 	if err != nil {
 		return
@@ -687,7 +680,14 @@ func setLdFlags() {
 	repo = getRepo(r)
 	branch = getBranch(r)
 	build = getBuild(r)
-	return
+}
+
+func setLdFlags() {
+	mg.Deps(setVersion, setGitInfo)
+	repo, branch, build = "unknown-repo", "unknown-branch", "unknown-build"
+	base := `-ldflags=all='-X main.Repo=%v -X main.Version=%v -X main.Branch=%v -X main.Build=%v'`
+
+	ldFlagsBase = fmt.Sprintf(base, repo, version, branch, build)
 }
 
 func checkToken() error {
