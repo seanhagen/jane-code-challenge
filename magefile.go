@@ -21,7 +21,6 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/go-git/go-git/v5"
 	ver "github.com/hashicorp/go-version"
 	"github.com/logrusorgru/aurora"
@@ -208,21 +207,21 @@ func (Release) VersionTag() error {
 	}
 
 	if err = sh.RunV("git", "add", versionFile); err != nil {
-		return err
+		return fmt.Errorf("unable to add version file '%v', reason: %w", versionFile, err)
 	}
 	if err = sh.RunV("git", "commit", "-m", fmt.Sprintf("\"Version bumped to %v\"", tag)); err != nil {
-		return err
+		return fmt.Errorf("unable to create commit: %w", err)
 	}
-	spew.Dump(branch)
+
 	if err = sh.RunV("git", "push", "origin", branch); err != nil {
-		return err
+		return fmt.Errorf("unable to push to branch '%v', reason: %w", branch, err)
 	}
 
 	if err = sh.RunV("git", "tag", "-a", "$TAG", "-m", fmt.Sprintf("updating version to %v", tag)); err != nil {
-		return err
+		return fmt.Errorf("unable to tag with new version: %w", err)
 	}
 	if err = sh.RunV("git", "push", "origin", "$TAG"); err != nil {
-		return err
+		return fmt.Errorf("unable to push git repo to origin: %w", err)
 	}
 
 	defer func() {
