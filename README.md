@@ -23,7 +23,7 @@ There are two ways you can get a binary:
 2. Use `mage` to build a binary on your computer -- see below.
 
 The binaries on the release page are built using
-[`gox`](https://github.com/mitchellh/gox), which makes cross-compilation for Go
+[gox](https://github.com/mitchellh/gox), which makes cross-compilation for Go
 a snap.
 
 # Mage Targets
