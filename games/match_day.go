@@ -99,7 +99,7 @@ func (m *matchDay) processMatchResults(t1, t2 *teamResult) error {
 		return &RecordGameError{m.Day, t2.team.Name, err}
 	}
 
-	add := []standing{standing{teamName: mo, rank: rank1}, standing{teamName: mt, rank: rank2}}
+	add := []standing{{teamName: mo, rank: rank1}, {teamName: mt, rank: rank2}}
 	m.Standings = append(m.Standings, add...)
 
 	return nil
@@ -124,7 +124,7 @@ func (m matchDay) Results() string {
 		out = fmt.Sprintf("%v%v, %v %v\n", out, t.teamName, t.rank, s)
 	}
 
-	return fmt.Sprintf("%v\n", out)
+	return out
 }
 
 // String is for the Stringer interface, a more compact version
