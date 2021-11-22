@@ -89,6 +89,9 @@ var (
 
 	ldFlagsBase = ""
 	version     = ""
+	repo        = ""
+	build       = ""
+	branch      = ""
 
 	rootPath = ""
 	goFiles  = []string{}
@@ -195,15 +198,25 @@ func (Release) VersionTag() error {
 		return err
 	}
 
+	err = os.WriteFile(versionFile, []byte(tag), 0644)
+	if err != nil {
+		return err
+	}
+
+	if err = sh.RunV("git", "add", versionFile); err != nil {
+		return err
+	}
+	if err = sh.RunV("git", "commit", "-m", fmt.Sprintf("Version bumped to %v", tag)); err != nil {
+		return err
+	}
+	if err = sh.RunV("git", "push", "origin", branch); err != nil {
+		return err
+	}
+
 	if err = sh.RunV("git", "tag", "-a", "$TAG", "-m", fmt.Sprintf("updating version to %v", tag)); err != nil {
 		return err
 	}
 	if err = sh.RunV("git", "push", "origin", "$TAG"); err != nil {
-		return err
-	}
-
-	err = os.WriteFile(versionFile, []byte(tag), 0644)
-	if err != nil {
 		return err
 	}
 
@@ -661,11 +674,6 @@ func setLdFlags() {
 		ldFlagsBase = fmt.Sprintf(base, repo, ver, branch, build)
 	}()
 
-	// wd, err := os.Getwd()
-	// if err != nil {
-	// 	return
-	// }
-
 	r, err := git.PlainOpen(".")
 	if err != nil {
 		return
@@ -674,7 +682,6 @@ func setLdFlags() {
 	repo = getRepo(r)
 	branch = getBranch(r)
 	build = getBuild(r)
-
 	return
 }
 
