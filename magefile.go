@@ -457,7 +457,6 @@ func buildForAllPlatforms() error {
 
 func buildForCurrent(debug bool) error {
 	mg.Deps(initVars)
-	// TODO: run go build, output to output directory
 
 	env := getEnv()
 	args := []string{
