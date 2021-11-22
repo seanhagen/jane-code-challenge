@@ -122,7 +122,7 @@ func (Util) Fmt() error {
 // Test is the namespace for stages that run tests
 type Test mg.Namespace
 
-// Run ...
+// Run is the target that runs all the basic tests ( no integration, etc )
 func (Test) Run() {
 	mg.SerialDeps(
 		initVars,
@@ -137,7 +137,7 @@ func (Test) Run() {
 // Build is the namespace for stages that output binaries
 type Build mg.Namespace
 
-// Build generates a compact binary for your current system
+// Current generates a compact binary for your current system
 func (Build) Current() {
 	mg.SerialDeps(
 		initVars,
