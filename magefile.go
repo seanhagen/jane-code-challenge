@@ -198,7 +198,7 @@ func (Release) VersionTag() error {
 		return errors.New("TAG environment variable is required and can't be blank")
 	}
 	if _, err = ver.NewVersion(tag); err != nil {
-		return err
+		return fmt.Errorf("%v is an invalid version tag: %w", err)
 	}
 
 	err = os.WriteFile(versionFile, []byte(tag), 0644)
