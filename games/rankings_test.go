@@ -101,27 +101,95 @@ func TestGames_Ranking_ParseMatchLine(t *testing.T) {
 }
 
 func TestGames_Ranking_TestParseAndOutput(t *testing.T) {
-	inputs := []string{
-		"San Jose Earthquakes 3, Santa Cruz Slugs 3",
-		"Capitola Seahorses 1, Aptos FC 0",
-		"Felton Lumberjacks 2, Monterey United 0",
-	}
-
-	expect := `Matchday 1
+	tests := []struct {
+		inputs []string
+		expect string
+	}{
+		{
+			[]string{
+				"San Jose Earthquakes 3, Santa Cruz Slugs 3",
+				"Capitola Seahorses 1, Aptos FC 0",
+				"Felton Lumberjacks 2, Monterey United 0",
+			},
+			`Matchday 1
 Capitola Seahorses, 3 pts
 Felton Lumberjacks, 3 pts
 San Jose Earthquakes, 1 pt
-`
+`,
+		},
+		{
+			[]string{
+				"San Jose Earthquakes 3, Santa Cruz Slugs 3",
+				"Capitola Seahorses 1, Aptos FC 0",
+				"Felton Lumberjacks 2, Monterey United 0",
+				"Felton Lumberjacks 1, Aptos FC 2",
+				"Santa Cruz Slugs 0, Capitola Seahorses 0",
+				"Monterey United 4, San Jose Earthquakes 2",
+			},
+			`Matchday 1
+Capitola Seahorses, 3 pts
+Felton Lumberjacks, 3 pts
+San Jose Earthquakes, 1 pt
 
-	r := NewRanking()
-	for _, tt := range inputs {
-		r.AddMatch(tt)
+Matchday 2
+Capitola Seahorses, 4 pts
+Aptos FC, 3 pts
+Felton Lumberjacks, 3 pts
+`,
+		},
+		{
+			[]string{
+				"San Jose Earthquakes 3, Santa Cruz Slugs 3",
+				"Capitola Seahorses 1, Aptos FC 0",
+				"Felton Lumberjacks 2, Monterey United 0",
+				"Felton Lumberjacks 1, Aptos FC 2",
+				"Santa Cruz Slugs 0, Capitola Seahorses 0",
+				"Monterey United 4, San Jose Earthquakes 2",
+				"Santa Cruz Slugs 2, Aptos FC 3",
+				"San Jose Earthquakes 1, Felton Lumberjacks 4",
+				"Monterey United 1, Capitola Seahorses 0",
+				"Aptos FC 2, Monterey United 0",
+				"Capitola Seahorses 5, San Jose Earthquakes 5",
+				"Santa Cruz Slugs 1, Felton Lumberjacks 1",
+			},
+			`Matchday 1
+Capitola Seahorses, 3 pts
+Felton Lumberjacks, 3 pts
+San Jose Earthquakes, 1 pt
+
+Matchday 2
+Capitola Seahorses, 4 pts
+Aptos FC, 3 pts
+Felton Lumberjacks, 3 pts
+
+Matchday 3
+Aptos FC, 6 pts
+Felton Lumberjacks, 6 pts
+Monterey United, 6 pts
+
+Matchday 4
+Aptos FC, 9 pts
+Felton Lumberjacks, 7 pts
+Monterey United, 6 pts
+`,
+		},
 	}
 
-	output := r.getCurrentMatchDay().Results()
-	if expect != output {
-		t.Errorf("output incorrect.\nexpected: \n-----\n%v\n-----\n\nrecieved: \n-----\n%v\n-----\n", expect, output)
+	for i, x := range tests {
+		tt := x
+		t.Run(fmt.Sprintf("test_%v_", i), func(t *testing.T) {
+			r := NewRanking()
+			for _, in := range tt.inputs {
+				r.AddMatch(in)
+			}
+
+			output := r.Results()
+			if tt.expect != output {
+				t.Errorf("output incorrect.\nexpected: \n-----\n%v\n-----\n\nrecieved: \n-----\n%v\n-----\n", tt.expect, output)
+			}
+		})
 	}
+
 }
 
 func TestGames_Ranking_TestAddMatch(t *testing.T) {

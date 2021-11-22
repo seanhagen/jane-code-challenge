@@ -164,13 +164,13 @@ func (r Ranking) parseTeamScore(in string) (*teamResult, error) {
 
 // Results ...
 func (r Ranking) Results() string {
-	out := ""
+	output := []string{}
 
 	for d := 0; d < r.currentDay; d++ {
-		out = fmt.Sprintf("%v%v", out, r.matches[d].Results())
+		output = append(output, fmt.Sprintf("%v", r.matches[d].Results()))
 	}
 
-	return out
+	return strings.Join(output, "\n")
 }
 
 // String is for the Stringer interface, so that
