@@ -189,6 +189,7 @@ type Release mg.Namespace
 // and push the tag. The tag must be a valid semantic version.
 func (Release) VersionTag() error {
 	mg.Deps(initVars)
+
 	var err error
 	tag := strings.TrimSpace(os.Getenv("TAG"))
 	if tag == "" {
@@ -206,7 +207,7 @@ func (Release) VersionTag() error {
 	if err = sh.RunV("git", "add", versionFile); err != nil {
 		return err
 	}
-	if err = sh.RunV("git", "commit", "-m", fmt.Sprintf("Version bumped to %v", tag)); err != nil {
+	if err = sh.RunV("git", "commit", "-m", fmt.Sprintf("\"Version bumped to %v\"", tag)); err != nil {
 		return err
 	}
 	if err = sh.RunV("git", "push", "origin", branch); err != nil {
@@ -666,12 +667,10 @@ func setVersion() {
 
 func setLdFlags() {
 	mg.Deps(setVersion)
-
-	repo, ver, branch, build := "unknown", "unknown", "unknown", "unknown"
+	repo, branch, build = "unknown-repo", "unknown-branch", "unknown-build"
 	base := "-X main.Repo=%v -X main.Version=%v -X main.Branch=%v -X main.Build=%v"
-
 	defer func() {
-		ldFlagsBase = fmt.Sprintf(base, repo, ver, branch, build)
+		ldFlagsBase = fmt.Sprintf(base, repo, version, branch, build)
 	}()
 
 	r, err := git.PlainOpen(".")
