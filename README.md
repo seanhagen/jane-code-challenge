@@ -10,9 +10,9 @@ The minimum requirements are Go (at least v1.17), and
 [make](https://www.gnu.org/software/make/manual/make.html), which is fine, but
 magefiles let us do so much more. Also Makefiles are a pain to read.
 
-There are a few other commands that are required, but running a mage will check
-for the required commands, and give you the URL that tells you how to install
-the missing tool if required.
+There are a few other tools that are required, but running `mage` will check
+for the required tools, and give you the URL with instructions on how to
+install the tool if it's missing.
 
 # Getting A Binary 
 
@@ -21,6 +21,10 @@ There are two ways you can get a binary:
 1. Download the appropriate binary [from the latest
    release](https://github.com/seanhagen/jane-code-challenge/releases/latest).
 2. Use `mage` to build a binary on your computer -- see below.
+
+The binaries on the release page are built using
+[`gox`](https://github.com/mitchellh/gox), which makes cross-compilation for Go
+a snap.
 
 # Mage Targets
 
