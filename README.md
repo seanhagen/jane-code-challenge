@@ -43,7 +43,7 @@ This will build a binary for _your_ system. The binary can be found at
 
 ### build:all 
 
-This target uses `ghr` to build a binary for multiple platforms at once. The
+This target uses `gox` to build a binary for multiple platforms at once. The
 variable `binaryTypes` in `magefile.go` controls what binaries are built.
 
 ## Other Useful Targets
