@@ -14,22 +14,30 @@ There are a few other commands that are required, but running a mage will check
 for the required commands, and give you the URL that tells you how to install
 the missing tool if required.
 
+# Getting A Binary 
+
+There are two ways you can get a binary:
+
+1. Download the appropriate binary [from the latest
+   release](https://github.com/seanhagen/jane-code-challenge/releases/latest).
+2. Use `mage` to build a binary on your computer -- see below.
+
 # Mage Targets
 
 Running `mage -l` will output a list of targets, but the three main targets are
 the following:
 
-## test:run
+### test:run
 
 This will run all the "basic" tests -- ie, no integration tests, anything that
 requires setup & teardown, or anything that needs to reach out to a service.
 
-## build:current 
+### build:current 
 
 This will build a binary for _your_ system. The binary can be found at
 `output/rankings` (unless you change any of the settings in `magefile.go` ).
 
-## build:all 
+### build:all 
 
 This target uses `ghr` to build a binary for multiple platforms at once. The
 variable `binaryTypes` in `magefile.go` controls what binaries are built.
@@ -77,30 +85,30 @@ The output will be sent to `stdout`.
 
 Some notes on how things could be improved, or potential pitfalls.
 
-## Other Build Targets 
+### Other Build Targets 
 
 There are other potentially useful build targets that could be created, or ways
 the current build targets could be improved.
 
-### release:create 
+#### release:create 
 
 This could read the git history to create a CHANGELOG file and put it in the
 `output` directory. It could also ask for a title or body for the release, so
 that the step of having to go to GitHub and edit the draft release isn't needed.
 
-### test:watch 
+#### test:watch 
 
 There are packages that enable Go to watch files, using one of those a Mage
 target could be written that watches all Go source files (including newly
 created ones) and then runs tests when there are changes.
 
-### test:integration or test:all
+#### test:integration or test:all
 
 This application doesn't have any, but an application that needs "bigger" tests
 (ie, long running, integration, etc) could use a separate Mage target to run the
 full suite of tests.
 
-### test:ci 
+#### test:ci 
 
 Using tools like `go-junit-report`, `gocover-cobertura`, and `golangci-lint`
 Mage could output files for a CI system to show test code coverage and other
