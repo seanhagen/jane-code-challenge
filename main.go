@@ -8,6 +8,17 @@ package main
 
 import "github.com/seanhagen/jane/cmd"
 
+var (
+	// Version is set by the build process, contains semantic version
+	Version string
+	// Build is set by the build process, contains sha tag of build
+	Build string
+	// Repo is set by the build process, contains the repo where the code for this binary was built from
+	Repo string
+	// Branch is set by the build process, contains the branch of the repo the binary was built from
+	Branch string
+)
+
 /**
  * Requirements:
  *  - input is text (file name as input argument)

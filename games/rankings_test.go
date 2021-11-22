@@ -120,7 +120,7 @@ San Jose Earthquakes, 1 pt
 
 	output := r.getCurrentMatchDay().Results()
 	if expect != output {
-		t.Errorf("output incorrect.\nexpected: \n%v\n\nrecieved: \n%v\n", expect, output)
+		t.Errorf("output incorrect.\nexpected: \n-----\n%v\n-----\n\nrecieved: \n-----\n%v\n-----\n", expect, output)
 	}
 }
 
