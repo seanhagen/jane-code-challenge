@@ -21,6 +21,7 @@ import (
 	"runtime"
 	"strings"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/go-git/go-git/v5"
 	ver "github.com/hashicorp/go-version"
 	"github.com/logrusorgru/aurora"
@@ -212,6 +213,7 @@ func (Release) VersionTag() error {
 	if err = sh.RunV("git", "commit", "-m", fmt.Sprintf("\"Version bumped to %v\"", tag)); err != nil {
 		return err
 	}
+	spew.Dump(branch)
 	if err = sh.RunV("git", "push", "origin", branch); err != nil {
 		return err
 	}
