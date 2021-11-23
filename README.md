@@ -89,6 +89,34 @@ The output will be sent to `stdout`.
 
 Some notes on how things could be improved, or potential pitfalls.
 
+### Weird Bugs
+
+#### Setting `ldflags`
+
+Something that apparently doesn't translate 1:1 from a Makefile is setting the
+`ldflags` flag when calling `go build`. For an app like this it's not _super_
+important, but for larger apps I see it as pretty important.
+
+Using `-ldflags` you can [embed information at build
+time](https://www.digitalocean.com/community/tutorials/using-ldflags-to-set-version-information-for-go-applications)
+into the binary that's created. This can be super handy for backend services,
+because you can embed the version & commit sha ( and other handy info ) into the
+binary so that it can be used in multiple ways:
+
+* as a header value in HTTP responses
+* included as part of error messages sent to services like
+  [HoneyBadger](https://www.honeybadger.io/)
+* included as part of the tracing messages
+* output from [a route](https://playground.bibabots.com/v1/info) to ensure that
+  all deployed versions are up-to-date
+  
+There are probably a few other ways compile-time information can be useful,
+these are just a few of the ways I've used such information in the past.
+
+However, something about the way that Go passes arguments to commands doesn't
+play well with the format of the `ldflags` string. It's not something I want to
+spend the next two days debugging, so I removed it from `magefile.go`.
+
 ### Other Build Targets 
 
 There are other potentially useful build targets that could be created, or ways

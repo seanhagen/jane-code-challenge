@@ -92,9 +92,8 @@ var (
 	build   = ""
 	branch  = ""
 
-	rootPath    = ""
-	ldFlagsBase = ""
-	goFiles     = []string{}
+	rootPath = ""
+	goFiles  = []string{}
 )
 
 func init() {
@@ -680,14 +679,6 @@ func setGitInfo() {
 	repo = getRepo(r)
 	branch = getBranch(r)
 	build = getBuild(r)
-}
-
-func setLdFlags() {
-	mg.Deps(setVersion, setGitInfo)
-	repo, branch, build = "unknown-repo", "unknown-branch", "unknown-build"
-	base := `-ldflags=all='-X main.Repo=%v -X main.Version=%v -X main.Branch=%v -X main.Build=%v'`
-
-	ldFlagsBase = fmt.Sprintf(base, repo, version, branch, build)
 }
 
 func checkToken() error {
